@@ -2,25 +2,27 @@
 
 @section('content')
     <div class="bg-white dark:bg-gray-700 shadow p-6 max-w-6xl mx-auto mt-10 rounded-lg transition-colors duration-300">
-        <h1 class="text-2xl font-bold text-pink-800 dark:text-pink-200 mb-4">Selamat Datang, {{ auth()->user()->name }}</h1>
-        <p class="text-pink-600 dark:text-pink-400 mb-6">Lihat dan beli produk yang tersedia di bawah ini.</p>
+        <h1 class="text-2xl font-bold text-pink-800 dark:text-pink-200 mb-4">
+            {{ __('messages.welcome_user', ['name' => auth()->user()->name]) }}
+        </h1>
+        <p class="text-pink-600 dark:text-pink-400 mb-6">{{ __('messages.view_products') }}</p>
 
         <div class="flex flex-wrap gap-3 mb-6">
             <a href="{{ route('user.cart') }}"
                 class="bg-pink-500 text-white px-4 py-2 rounded hover:bg-pink-600 transition-colors duration-200">
-                🛒 Lihat Keranjang
+                🛒 {{ __('messages.cart') }}
             </a>
             <a href="{{ route('user.transactions') }}"
                 class="bg-pink-400 text-white px-4 py-2 rounded hover:bg-pink-500 transition-colors duration-200">
-                📦 Riwayat Transaksi
+                📦 {{ __('messages.transactions') }}
             </a>
             <a href="{{ route('user.wishlist') }}"
                 class="bg-red-500 text-white px-4 py-2 rounded hover:bg-red-600 transition-colors duration-200">
-                ❤️ Wishlist
+                ❤️ {{ __('messages.wishlist') }}
             </a>
             <a href="{{ route('user.chat') }}"
                 class="relative bg-pink-300 text-white px-4 py-2 rounded hover:bg-pink-400 transition-colors duration-200">
-                <span>💬 Chat dengan Admin</span>
+                <span>💬 {{ __('messages.chat') }}</span>
 
                 @if(session('user_unread_messages_count'))
                     <span class="absolute -top-2 -right-2 flex h-5 w-5">
@@ -36,9 +38,9 @@
             <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-6 gap-4 items-end">
 
                 <div class="md:col-span-2 relative">
-                    <label for="search" class="block text-sm font-medium text-pink-700 dark:text-pink-300 mb-1">Cari
-                        Produk</label>
-                    <input type="text" name="search" id="search" placeholder="Nama produk..."
+                    <label for="search"
+                        class="block text-sm font-medium text-pink-700 dark:text-pink-300 mb-1">{{ __('messages.search_products') }}</label>
+                    <input type="text" name="search" id="search" placeholder="{{ __('messages.search_placeholder') }}"
                         value="{{ request('search') }}"
                         class="border border-pink-300 dark:border-gray-600 p-2 rounded w-full focus:outline-pink-400 dark:bg-gray-700 dark:text-white"
                         oninput="autoSuggest(this.value)">
@@ -49,10 +51,10 @@
 
                 <div>
                     <label for="kategori"
-                        class="block text-sm font-medium text-pink-700 dark:text-pink-300 mb-1">Kategori</label>
+                        class="block text-sm font-medium text-pink-700 dark:text-pink-300 mb-1">{{ __('messages.all_categories') }}</label>
                     <select name="kategori" id="kategori"
                         class="border border-pink-300 dark:border-gray-600 p-2 rounded w-full focus:outline-pink-400 dark:bg-gray-700 dark:text-white">
-                        <option value="">Semua Kategori</option>
+                        <option value="">{{ __('messages.all_categories') }}</option>
                         @foreach($kategori as $kat)
                             <option value="{{ $kat->id }}" {{ request('kategori') == $kat->id ? 'selected' : '' }}>
                                 {{ $kat->nama }}
@@ -62,30 +64,29 @@
                 </div>
 
                 <div>
-                    <label for="rating_min" class="block text-sm font-medium text-pink-700 dark:text-pink-300 mb-1">Rating
-                        Min</label>
+                    <label for="rating_min" class="block text-sm font-medium text-pink-700 dark:text-pink-300 mb-1">{{ __('messages.rating_min') }}</label>
                     <select name="rating_min" id="rating_min"
                         class="border border-pink-300 dark:border-gray-600 p-2 rounded w-full focus:outline-pink-400 dark:bg-gray-700 dark:text-white">
-                        <option value="">Semua Rating</option>
-                        <option value="1" {{ request('rating_min') == '1' ? 'selected' : '' }}>1+ Bintang</option>
-                        <option value="2" {{ request('rating_min') == '2' ? 'selected' : '' }}>2+ Bintang</option>
-                        <option value="3" {{ request('rating_min') == '3' ? 'selected' : '' }}>3+ Bintang</option>
-                        <option value="4" {{ request('rating_min') == '4' ? 'selected' : '' }}>4+ Bintang</option>
-                        <option value="5" {{ request('rating_min') == '5' ? 'selected' : '' }}>5 Bintang</option>
+                        <option value="">{{ __('messages.all_ratings') }}</option>
+                        <option value="1" {{ request('rating_min') == '1' ? 'selected' : '' }}>{{ __('messages.stars', ['count' => 1]) }}</option>
+                        <option value="2" {{ request('rating_min') == '2' ? 'selected' : '' }}>{{ __('messages.stars', ['count' => 2]) }}</option>
+                        <option value="3" {{ request('rating_min') == '3' ? 'selected' : '' }}>{{ __('messages.stars', ['count' => 3]) }}</option>
+                        <option value="4" {{ request('rating_min') == '4' ? 'selected' : '' }}>{{ __('messages.stars', ['count' => 4]) }}</option>
+                        <option value="5" {{ request('rating_min') == '5' ? 'selected' : '' }}>5 {{ __('messages.stars', ['count' => 5]) }}</option>
                     </select>
                 </div>
 
                 <div>
                     <label for="sort"
-                        class="block text-sm font-medium text-pink-700 dark:text-pink-300 mb-1">Urutkan</label>
+                        class="block text-sm font-medium text-pink-700 dark:text-pink-300 mb-1">{{ __('messages.sort_by') }}</label>
                     <select name="sort" id="sort"
                         class="border border-pink-300 dark:border-gray-600 p-2 rounded w-full focus:outline-pink-400 dark:bg-gray-700 dark:text-white">
-                        <option value="latest" {{ request('sort') == 'latest' ? 'selected' : '' }}>Terbaru</option>
-                        <option value="price_asc" {{ request('sort') == 'price_asc' ? 'selected' : '' }}>Termurah</option>
-                        <option value="price_desc" {{ request('sort') == 'price_desc' ? 'selected' : '' }}>Termahal</option>
-                        <option value="rating_desc" {{ request('sort') == 'rating_desc' ? 'selected' : '' }}>Rating Tertinggi
+                        <option value="latest" {{ request('sort') == 'latest' ? 'selected' : '' }}>{{ __('messages.latest') }}</option>
+                        <option value="price_asc" {{ request('sort') == 'price_asc' ? 'selected' : '' }}>{{ __('messages.cheapest') }}</option>
+                        <option value="price_desc" {{ request('sort') == 'price_desc' ? 'selected' : '' }}>{{ __('messages.most_expensive') }}</option>
+                        <option value="rating_desc" {{ request('sort') == 'rating_desc' ? 'selected' : '' }}>{{ __('messages.highest_rating') }}
                         </option>
-                        <option value="terlaris" {{ request('sort') == 'terlaris' ? 'selected' : '' }}>Terlaris</option>
+                        <option value="terlaris" {{ request('sort') == 'terlaris' ? 'selected' : '' }}>{{ __('messages.best_seller') }}</option>
                     </select>
                 </div>
 
@@ -101,7 +102,7 @@
             <div class="mt-4">
                 <button type="submit"
                     class="bg-pink-600 text-white px-6 py-2 rounded hover:bg-pink-700 transition-colors duration-200">
-                    Filter & Urutkan
+                    {{ __('messages.search_products') }} & {{ __('messages.sort_by') }}
                 </button>
             </div>
         </form>
@@ -318,26 +319,26 @@
                             const reviewDiv = document.createElement('div');
                             reviewDiv.className = 'border-b border-gray-200 dark:border-gray-600 pb-4 last:border-b-0';
                             reviewDiv.innerHTML = `
-                                            <div class="flex items-start space-x-3">
-                                                <div class="w-8 h-8 bg-pink-500 rounded-full flex items-center justify-center text-white text-sm font-bold">
-                                                    ${review.user.name.charAt(0).toUpperCase()}
-                                                </div>
-                                                <div class="flex-1">
-                                                    <div class="flex items-center space-x-2 mb-2">
-                                                        <span class="font-medium text-gray-900 dark:text-white">${review.user.name}</span>
-                                                        <div class="flex text-yellow-400">
-                                                            ${Array.from({ length: 5 }, (_, i) =>
+                                                            <div class="flex items-start space-x-3">
+                                                                <div class="w-8 h-8 bg-pink-500 rounded-full flex items-center justify-center text-white text-sm font-bold">
+                                                                    ${review.user.name.charAt(0).toUpperCase()}
+                                                                </div>
+                                                                <div class="flex-1">
+                                                                    <div class="flex items-center space-x-2 mb-2">
+                                                                        <span class="font-medium text-gray-900 dark:text-white">${review.user.name}</span>
+                                                                        <div class="flex text-yellow-400">
+                                                                            ${Array.from({ length: 5 }, (_, i) =>
                                 i < review.rating ? '★' : '☆'
                             ).join('')}
-                                                        </div>
-                                                        <span class="text-xs text-gray-500 dark:text-gray-400">
-                                                            ${new Date(review.created_at).toLocaleDateString('id-ID')}
-                                                        </span>
-                                                    </div>
-                                                    <p class="text-gray-700 dark:text-gray-300">${review.review}</p>
-                                                </div>
-                                            </div>
-                                        `;
+                                                                        </div>
+                                                                        <span class="text-xs text-gray-500 dark:text-gray-400">
+                                                                            ${new Date(review.created_at).toLocaleDateString('id-ID')}
+                                                                        </span>
+                                                                    </div>
+                                                                    <p class="text-gray-700 dark:text-gray-300">${review.review}</p>
+                                                                </div>
+                                                            </div>
+                                                        `;
                             content.appendChild(reviewDiv);
                         });
                     } else {

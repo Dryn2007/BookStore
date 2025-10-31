@@ -39,7 +39,7 @@
                         </button>
 
                         <button id="lang-toggle" class="text-white hover:text-pink-100 font-medium">
-                            EN/ID
+                            {{ session('locale', 'id') === 'id' ? 'EN' : 'ID' }}
                         </button>
 
                         <a href="{{ route('about.show') }}" class="text-white font-semibold hover:text-gray-300">
@@ -81,7 +81,7 @@
                     </a>
                     <button id="lang-toggle-mobile"
                         class="block w-full text-left text-white px-3 py-2 rounded-md hover:bg-pink-700">
-                        EN/ID
+                        {{ session('locale', 'id') === 'id' ? 'EN' : 'ID' }}
                     </button>
                 </div>
             </div>
@@ -148,9 +148,41 @@
             });
         }
 
-        // (Script untuk lang-toggle sengaja saya nonaktifkan dulu
-        // agar fokus ke dark-mode dan hamburger.
-        // Kita bisa tambahkan itu lagi nanti jika diperlukan)
+        // --- Language Toggle ---
+        const langToggle = document.getElementById('lang-toggle');
+        const langToggleMobile = document.getElementById('lang-toggle-mobile');
+
+        function toggleLanguage() {
+            const currentLocale = '{{ session('locale', 'id') }}';
+            const newLocale = currentLocale === 'id' ? 'en' : 'id';
+
+            // Create form to submit language change
+            const form = document.createElement('form');
+            form.method = 'POST';
+            form.action = '/user/language';
+
+            const csrfToken = document.createElement('input');
+            csrfToken.type = 'hidden';
+            csrfToken.name = '_token';
+            csrfToken.value = '{{ csrf_token() }}';
+
+            const localeInput = document.createElement('input');
+            localeInput.type = 'hidden';
+            localeInput.name = 'locale';
+            localeInput.value = newLocale;
+
+            form.appendChild(csrfToken);
+            form.appendChild(localeInput);
+            document.body.appendChild(form);
+            form.submit();
+        }
+
+        if (langToggle) {
+            langToggle.addEventListener('click', toggleLanguage);
+        }
+        if (langToggleMobile) {
+            langToggleMobile.addEventListener('click', toggleLanguage);
+        }
 
         // Initialize AOS
         AOS.init();

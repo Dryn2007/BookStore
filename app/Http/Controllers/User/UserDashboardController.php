@@ -8,11 +8,16 @@ use Illuminate\Support\Facades\Auth;
 use App\Models\Produk;
 use App\Models\Kategori;
 use App\Models\Message;
+use Illuminate\Support\Facades\App;
 
 class UserDashboardController extends Controller
 {
     public function index(Request $request)
     {
+        // Set locale from session
+        $locale = session('locale', 'id');
+        App::setLocale($locale);
+
         // Mulai query dengan eager loading 'kategori' dan 'reviews'
         // Ini menggantikan dua blok query terpisah yang Anda miliki sebelumnya
         $query = Produk::with(['kategori', 'reviews.user']);

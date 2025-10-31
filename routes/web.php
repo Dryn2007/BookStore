@@ -15,6 +15,7 @@ use App\Http\Controllers\User\UserDashboardController;
 use App\Http\Controllers\User\CartController;
 use App\Http\Controllers\User\TransactionController;
 use App\Http\Controllers\User\PDFController;
+use App\Http\Controllers\User\LanguageController;
 use App\Http\Controllers\ChatController;
 use App\Http\Controllers\PaymentController;
 use App\Http\Controllers\AboutPageController;
@@ -116,5 +117,8 @@ Route::middleware('web')->group(function () {
         Route::get('/produk/{produk}/reviews', [App\Http\Controllers\User\ReviewController::class, 'index'])->name('reviews.index');
         Route::post('/produk/{produk}/reviews', [App\Http\Controllers\User\ReviewController::class, 'store'])->name('reviews.store');
         Route::put('/produk/{produk}/reviews', [App\Http\Controllers\User\ReviewController::class, 'update'])->name('reviews.update');
+
+        // Language Switch
+        Route::post('/language', [LanguageController::class, 'switchLanguage'])->name('language.switch');
     });
 }); // <-- TUTUP GRUP 'web' DI SINI
