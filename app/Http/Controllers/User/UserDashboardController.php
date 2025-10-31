@@ -49,6 +49,10 @@ class UserDashboardController extends Controller
                 case 'rating_desc':
                     $query->orderBy('rating', 'desc');
                     break;
+                case 'terlaris':
+                    $query->withCount('transactionItems')
+                        ->orderBy('transaction_items_count', 'desc');
+                    break;
                 case 'latest':
                 default:
                     $query->orderBy('created_at', 'desc');

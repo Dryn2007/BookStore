@@ -112,26 +112,21 @@
                                                 @endforeach
                                             </div>
                                         </div>
+
+                                        @if($trx->catatan_pengiriman)
+                                            <div class="shipping-notes-section">
+                                                <h5 class="notes-title">📝 Catatan Pengiriman</h5>
+                                                <p class="notes-content">{{ $trx->catatan_pengiriman }}</p>
+                                            </div>
+                                        @endif
                                     </div>
 
                                     <div class="card-actions">
-                                        @if ($trx->status === 'pending')
-                                            <form method="POST" action="{{ route('admin.transactions.konfirmasi', $trx->id) }}"
-                                                class="confirm-form" id="confirm-form-{{ $trx->id }}">
-                                                @csrf
-                                                <button type="submit" class="action-btn btn-confirm">
-                                                    <span class="btn-icon">✅</span>
-                                                    Confirm Order
-                                                </button>
-                                            </form>
-                                        @endif
-
-                                        @if ($trx->status === 'dikirim')
-                                            {{-- <button class="action-btn btn-complete" onclick="markAsComplete({{ $trx->id }})">
-                                                <span class="btn-icon">📦</span>
-                                                Mark Complete
-                                            </button> --}}
-                                        @endif
+                                        <button class="action-btn btn-edit"
+                                            onclick="openEditModal({{ $trx->id }}, '{{ $trx->status }}', '{{ $trx->catatan_pengiriman ?? '' }}')">
+                                            <span class="btn-icon">✏️</span>
+                                            Edit Status
+                                        </button>
                                     </div>
                                 </div>
                             @endforeach
@@ -148,11 +143,55 @@
         </div>
     </div>
 
+    <!-- Edit Modal -->
+    <div id="editModal" class="fixed inset-0 bg-transparent backdrop-brightness-50 hidden z-50 flex items-center justify-center p-4">
+        <div class="bg-white dark:bg-gray-800 rounded-lg max-w-md w-full">
+            <div class="p-6">
+                <div class="flex justify-between items-center mb-4">
+                    <h3 class="text-lg font-semibold text-gray-900 dark:text-white">Edit Status Pesanan</h3>
+                    <button onclick="closeEditModal()" class="text-gray-400 hover:text-gray-600 dark:hover:text-gray-300">
+                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12">
+                            </path>
+                        </svg>
+                    </button>
+                </div>
+                <form id="editForm" method="POST">
+                    @csrf
+                    <div class="mb-4">
+                        <label for="status" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Status
+                            Pesanan</label>
+                        <select name="status" id="status"
+                            class="w-full p-2 border border-gray-300 dark:border-gray-600 rounded-md dark:bg-gray-700 dark:text-white">
+                            <option value="pending">Menunggu Pembayaran</option>
+                            <option value="dikirim">Dikirim</option>
+                            <option value="selesai">Selesai</option>
+                        </select>
+                    </div>
+                    <div class="mb-4">
+                        <label for="catatan_pengiriman"
+                            class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Catatan
+                            Pengiriman</label>
+                        <textarea name="catatan_pengiriman" id="catatan_pengiriman" rows="3"
+                            class="w-full p-2 border border-gray-300 dark:border-gray-600 rounded-md dark:bg-gray-700 dark:text-white"
+                            placeholder="Tambahkan catatan pengiriman..."></textarea>
+                    </div>
+                    <div class="flex justify-end space-x-3">
+                        <button type="button" onclick="closeEditModal()"
+                            class="px-4 py-2 text-gray-600 dark:text-gray-400 hover:text-gray-800 dark:hover:text-gray-200">Batal</button>
+                        <button type="submit"
+                            class="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700">Simpan</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
     @push('scripts')
         <script>
             document.addEventListener('DOMContentLoaded', function () {
                 // [FIX] JavaScript diperbarui untuk layout baru
-                const filterTabs = document.querySelectorAll('.filter-tab');
+                const filterTabs = document.querySelectorAll('.filter-tab'); // <-- INI YANG DIPERBAIKI (; menjadi ;)
                 const transactionCards = document.querySelectorAll('.transaction-card');
                 const userSections = document.querySelectorAll('.user-transactions-section'); // Ambil section user
 
@@ -216,17 +255,23 @@
                     });
                 });
 
-                // Confirm form submission
-                const confirmForms = document.querySelectorAll('.confirm-form');
-                confirmForms.forEach(form => {
-                    form.addEventListener('submit', function (e) {
-                        const confirmBtn = this.querySelector('.btn-confirm');
-                        confirmBtn.innerHTML = '<span class="btn-icon">⏳</span>Processing...';
-                        confirmBtn.disabled = true;
+                // Edit modal functions
+                window.openEditModal = function (transactionId, currentStatus, currentNote) {
+                    document.getElementById('status').value = currentStatus;
+                    document.getElementById('catatan_pengiriman').value = currentNote;
+                    document.getElementById('editForm').action = `/admin/transactions/${transactionId}/konfirmasi`;
+                    document.getElementById('editModal').classList.remove('hidden');
+                };
 
-                        // Submit the form
-                        this.submit();
-                    });
+                window.closeEditModal = function () {
+                    document.getElementById('editModal').classList.add('hidden');
+                };
+
+                // Close modal when clicking outside
+                document.getElementById('editModal').addEventListener('click', function (e) {
+                    if (e.target === this) {
+                        closeEditModal();
+                    }
                 });
 
                 // Card hover effects
@@ -628,6 +673,28 @@
         .empty-icon {
             font-size: 2rem;
             margin-bottom: 1rem;
+        }
+
+        .shipping-notes-section {
+            margin-top: 1rem;
+            border-top: 1px dashed #ddd;
+            padding-top: 1rem;
+        }
+
+        .notes-title {
+            font-size: 1rem;
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+            color: var(--primary-color);
+        }
+
+        .notes-content {
+            font-size: 0.9rem;
+            color: #555;
+            background: #f9f9f9;
+            padding: 0.8rem;
+            border-radius: 6px;
+            border-left: 3px solid var(--secondary-color);
         }
 
         @keyframes slideInUp {

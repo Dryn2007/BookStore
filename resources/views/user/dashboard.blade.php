@@ -85,6 +85,7 @@
                         <option value="price_desc" {{ request('sort') == 'price_desc' ? 'selected' : '' }}>Termahal</option>
                         <option value="rating_desc" {{ request('sort') == 'rating_desc' ? 'selected' : '' }}>Rating Tertinggi
                         </option>
+                        <option value="terlaris" {{ request('sort') == 'terlaris' ? 'selected' : '' }}>Terlaris</option>
                     </select>
                 </div>
 
@@ -155,7 +156,8 @@
                                             </div>
                                         </div>
                                         <p class="text-gray-600 dark:text-gray-400 line-clamp-2">
-                                            {{ Str::limit($latestReview->review, 80) }}</p>
+                                            {{ Str::limit($latestReview->review, 80) }}
+                                        </p>
                                     </div>
                                 </div>
                             @endif
@@ -214,7 +216,8 @@
     </div>
 
     <!-- Reviews Modal -->
-    <div id="reviewsModal" class="fixed inset-0  bg-transparent backdrop-brightness-50 hidden z-50 flex items-center justify-center p-4">
+    <div id="reviewsModal"
+        class="fixed inset-0  bg-transparent backdrop-brightness-50 hidden z-50 flex items-center justify-center p-4">
         <div class="bg-white dark:bg-gray-800 rounded-lg max-w-2xl w-full max-h-[80vh] overflow-y-auto">
             <div class="p-6">
                 <div class="flex w justify-between items-center mb-4">
@@ -315,26 +318,26 @@
                             const reviewDiv = document.createElement('div');
                             reviewDiv.className = 'border-b border-gray-200 dark:border-gray-600 pb-4 last:border-b-0';
                             reviewDiv.innerHTML = `
-                                        <div class="flex items-start space-x-3">
-                                            <div class="w-8 h-8 bg-pink-500 rounded-full flex items-center justify-center text-white text-sm font-bold">
-                                                ${review.user.name.charAt(0).toUpperCase()}
-                                            </div>
-                                            <div class="flex-1">
-                                                <div class="flex items-center space-x-2 mb-2">
-                                                    <span class="font-medium text-gray-900 dark:text-white">${review.user.name}</span>
-                                                    <div class="flex text-yellow-400">
-                                                        ${Array.from({ length: 5 }, (_, i) =>
+                                            <div class="flex items-start space-x-3">
+                                                <div class="w-8 h-8 bg-pink-500 rounded-full flex items-center justify-center text-white text-sm font-bold">
+                                                    ${review.user.name.charAt(0).toUpperCase()}
+                                                </div>
+                                                <div class="flex-1">
+                                                    <div class="flex items-center space-x-2 mb-2">
+                                                        <span class="font-medium text-gray-900 dark:text-white">${review.user.name}</span>
+                                                        <div class="flex text-yellow-400">
+                                                            ${Array.from({ length: 5 }, (_, i) =>
                                 i < review.rating ? '★' : '☆'
                             ).join('')}
+                                                        </div>
+                                                        <span class="text-xs text-gray-500 dark:text-gray-400">
+                                                            ${new Date(review.created_at).toLocaleDateString('id-ID')}
+                                                        </span>
                                                     </div>
-                                                    <span class="text-xs text-gray-500 dark:text-gray-400">
-                                                        ${new Date(review.created_at).toLocaleDateString('id-ID')}
-                                                    </span>
+                                                    <p class="text-gray-700 dark:text-gray-300">${review.review}</p>
                                                 </div>
-                                                <p class="text-gray-700 dark:text-gray-300">${review.review}</p>
                                             </div>
-                                        </div>
-                                    `;
+                                        `;
                             content.appendChild(reviewDiv);
                         });
                     } else {

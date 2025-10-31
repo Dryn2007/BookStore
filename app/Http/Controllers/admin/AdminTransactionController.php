@@ -22,15 +22,23 @@ class AdminTransactionController extends Controller
         return view('admin.transactions.index', compact('transactions'));
     }
 
-    public function konfirmasi($id)
+    public function konfirmasi(Request $request, $id)
     {
         if (auth()->user()->role !== 'admin') {
             abort(403, 'Akses hanya untuk admin.');
         }
 
-        $transaction = Transaction::findOrFail($id);
-        $transaction->update(['status' => 'dikirim']);
+        $request->validate([
+            'status' => 'required|in:pending,dikirim,selesai',
+            'catatan_pengiriman' => 'nullable|string|max:500',
+        ]);
 
-        return back()->with('success', 'Transaksi telah dikonfirmasi.');
+        $transaction = Transaction::findOrFail($id);
+        $transaction->update([
+            'status' => $request->status,
+            'catatan_pengiriman' => $request->catatan_pengiriman,
+        ]);
+
+        return back()->with('success', 'Status pesanan dan catatan pengiriman telah diperbarui.');
     }
 }

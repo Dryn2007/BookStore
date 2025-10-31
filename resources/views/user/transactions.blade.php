@@ -6,10 +6,10 @@
 
         @forelse($transaksi as $trx)
             <div class="bg-white rounded-lg p-6 mb-6 shadow-md text-gray-800 border-l-4
-                            @if($trx->status === 'pending') border-yellow-500
-                            @elseif($trx->status === 'dikirim') border-blue-500
-                            @elseif($trx->status === 'selesai') border-green-500
-                            @else border-gray-300 @endif">
+                                    @if($trx->status === 'pending') border-yellow-500
+                                    @elseif($trx->status === 'dikirim') border-blue-500
+                                    @elseif($trx->status === 'selesai') border-green-500
+                                    @else border-gray-300 @endif">
 
                 <div class="flex justify-between items-center">
                     <div>
@@ -17,13 +17,18 @@
                         <p class="mt-1">
                             <span class="font-semibold text-gray-600">Status:</span>
                             <span class="inline-block px-3 py-1 text-sm rounded-full
-                                            @if($trx->status === 'pending') bg-yellow-100 text-yellow-800
-                                            @elseif($trx->status === 'dikirim') bg-blue-100 text-blue-800
-                                            @elseif($trx->status === 'selesai') bg-green-100 text-green-800
-                                            @else bg-gray-200 text-gray-600 @endif">
+                                                    @if($trx->status === 'pending') bg-yellow-100 text-yellow-800
+                                                    @elseif($trx->status === 'dikirim') bg-blue-100 text-blue-800
+                                                    @elseif($trx->status === 'selesai') bg-green-100 text-green-800
+                                                    @else bg-gray-200 text-gray-600 @endif">
                                 {{ ucfirst($trx->status) }}
                             </span>
                         </p>
+                        @if($trx->catatan_pengiriman)
+                            <p class="mt-2 text-sm text-gray-600">
+                                <span class="font-semibold">📝 Catatan Pengiriman:</span> {{ $trx->catatan_pengiriman }}
+                            </p>
+                        @endif
                     </div>
 
                     <div class="flex gap-3 items-center">
@@ -56,7 +61,8 @@
                                     <div>
                                         <p class="font-medium text-gray-800">{{ $item->produk->nama }}</p>
                                         <p class="text-sm text-gray-600">Qty: {{ $item->quantity }} × Rp
-                                            {{ number_format($item->harga, 0, ',', '.') }}</p>
+                                            {{ number_format($item->harga, 0, ',', '.') }}
+                                        </p>
                                     </div>
                                 </div>
 
