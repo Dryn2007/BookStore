@@ -5,11 +5,11 @@
         <div class="dashboard-header">
             <div class="header-content">
                 <div class="header-info">
-                        <h1 class="page-title">
-                            <span class="title-icon">📋</span>
-                            Manajemen Pesanan
-                        </h1>
-                        <p class="page-subtitle">Pantau dan kelola semua pesanan user</p>
+                    <h1 class="page-title">
+                        <span class="title-icon">📋</span>
+                        Manajemen Pesanan
+                    </h1>
+                    <p class="page-subtitle">Pantau dan kelola semua pesanan user</p>
                 </div>
                 <div class="header-stats">
                     <div class="stat-card">
@@ -117,7 +117,7 @@
                                     <div class="card-actions">
                                         @if ($trx->status === 'pending')
                                             <form method="POST" action="{{ route('admin.transactions.konfirmasi', $trx->id) }}"
-                                                class="confirm-form">
+                                                class="confirm-form" id="confirm-form-{{ $trx->id }}">
                                                 @csrf
                                                 <button type="submit" class="action-btn btn-confirm">
                                                     <span class="btn-icon">✅</span>
@@ -201,18 +201,31 @@
                     });
                 });
 
+                // Search button functionality
+                const searchBtn = document.querySelector('.search-btn');
+                searchBtn.addEventListener('click', function () {
+                    const searchTerm = searchInput.value.toLowerCase();
+
+                    userSections.forEach(section => { // Loop setiap section user
+                        const text = section.textContent.toLowerCase();
+                        if (text.includes(searchTerm)) {
+                            section.style.display = 'flex'; // Gunakan 'flex'
+                        } else {
+                            section.style.display = 'none';
+                        }
+                    });
+                });
+
                 // Confirm form submission
                 const confirmForms = document.querySelectorAll('.confirm-form');
                 confirmForms.forEach(form => {
                     form.addEventListener('submit', function (e) {
-                        e.preventDefault();
                         const confirmBtn = this.querySelector('.btn-confirm');
                         confirmBtn.innerHTML = '<span class="btn-icon">⏳</span>Processing...';
                         confirmBtn.disabled = true;
 
-                        setTimeout(() => {
-                            this.submit();
-                        }, 1000);
+                        // Submit the form
+                        this.submit();
                     });
                 });
 

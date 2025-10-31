@@ -9,57 +9,80 @@
     <title>{{ config('app.name', 'Laravel') }} - User</title>
 
 
-    <!-- Tailwind CSS -->
-    <script src="https://cdn.tailwindcss.com"></script>
+    @vite(['resources/css/app.css', 'resources/js/app.js'])
 
-    <!-- Fonts -->
+
     <link href="https://fonts.bunny.net/css?family=Nunito:400,600,700" rel="stylesheet" />
 
-    <!-- SweetAlert2 -->
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
-    <!-- AOS CSS -->
     <link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet">
 
-    <!-- AOS JS -->
     <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
 </head>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/flowbite/2.2.1/flowbite.min.js"></script>
 
 <body class="bg-pink-50 dark:bg-gray-800 font-sans antialiased">
     <div id="app">
-        <!-- Navbar -->
         <nav class="bg-pink-600 fixed top-0 left-0 w-full z-50 shadow">
             <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
                 <div class="flex justify-between h-16 items-center">
+
                     <div class="flex-shrink-0">
                         <a href="{{ url('/user/dashboard') }}" class="text-white font-bold text-lg">
                             ADR BOOKS ( {{ Auth::user()->name }} )
                         </a>
                     </div>
 
-
-                    <div class="flex items-center space-x-6">
-                        <!-- Dark Mode Toggle -->
-                        <button id="dark-mode-toggle" class="text-white hover:text-pink-100 font-medium">
-                            🌙 Dark Mode
+                    <div class="hidden md:flex items-center space-x-6">
+                        <button id="dark-mode-toggle" class="text-white text-xl hover:text-pink-100 p-2 rounded-full">
                         </button>
 
-                        <!-- Language Toggle -->
                         <button id="lang-toggle" class="text-white hover:text-pink-100 font-medium">
                             EN/ID
                         </button>
 
-                        <!-- Tombol Logout -->
+                        <a href="{{ route('about.show') }}" class="text-white font-semibold hover:text-gray-300">
+                            About Us
+                        </a>
+
                         <a href="{{ route('logout') }}"
                             onclick="event.preventDefault(); document.getElementById('logout-form').submit();"
                             class="text-white hover:text-pink-100 font-medium">
                             Logout
                         </a>
-                        <a href="{{ route('about.show') }}" class="text-white font-semibold hover:text-gray-300">
-                            About Us
-                        </a>
                     </div>
+
+                    <div class="md:hidden flex items-center space-x-2">
+                        <button id="dark-mode-toggle-mobile"
+                            class="text-white text-xl hover:text-pink-100 p-2 rounded-full">
+                        </button>
+
+                        <button id="mobile-menu-button" class="text-white p-2 rounded-md hover:bg-pink-700">
+                            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"
+                                xmlns="http://www.w3.org/2000/svg">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                    d="M4 6h16M4 12h16m-7 6h7"></path>
+                            </svg>
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <div id="mobile-menu" class="hidden md:hidden">
+                <div class="px-2 pt-2 pb-3 space-y-1 sm:px-3">
+                    <a href="{{ route('about.show') }}" class="block text-white px-3 py-2 rounded-md hover:bg-pink-700">
+                        About Us
+                    </a>
+                    <a href="{{ route('logout') }}"
+                        onclick="event.preventDefault(); document.getElementById('logout-form').submit();"
+                        class="block text-white px-3 py-2 rounded-md hover:bg-pink-700">
+                        Logout
+                    </a>
+                    <button id="lang-toggle-mobile"
+                        class="block w-full text-left text-white px-3 py-2 rounded-md hover:bg-pink-700">
+                        EN/ID
+                    </button>
                 </div>
             </div>
         </nav>
@@ -68,7 +91,6 @@
             @csrf
         </form>
 
-        <!-- Content -->
         <main class="pt-20">
             @yield('content')
         </main>
@@ -77,38 +99,58 @@
     @stack('scripts')
 
     <script>
-        // Dark Mode Toggle
+        // --- Dark Mode Toggle ---
         const darkModeToggle = document.getElementById('dark-mode-toggle');
+        const darkModeToggleMobile = document.getElementById('dark-mode-toggle-mobile');
         const html = document.documentElement;
+        const moonIcon = '🌙';
+        const sunIcon = '☀️';
 
-        // Check for saved theme preference or default to light mode
-        const currentTheme = localStorage.getItem('theme') || 'light';
-        if (currentTheme === 'dark') {
-            html.classList.add('dark');
-            darkModeToggle.textContent = '☀️ Light Mode';
-        } else {
-            darkModeToggle.textContent = '🌙 Dark Mode';
+        // Fungsi untuk mengatur tema dan ikon
+        function setDarkMode(isDark) {
+            if (isDark) {
+                html.classList.add('dark');
+                localStorage.setItem('theme', 'dark');
+                if (darkModeToggle) darkModeToggle.innerHTML = sunIcon;
+                if (darkModeToggleMobile) darkModeToggleMobile.innerHTML = sunIcon;
+            } else {
+                html.classList.remove('dark');
+                localStorage.setItem('theme', 'light');
+                if (darkModeToggle) darkModeToggle.innerHTML = moonIcon;
+                if (darkModeToggleMobile) darkModeToggleMobile.innerHTML = moonIcon;
+            }
         }
 
-        darkModeToggle.addEventListener('click', () => {
-            html.classList.toggle('dark');
-            const theme = html.classList.contains('dark') ? 'dark' : 'light';
-            localStorage.setItem('theme', theme);
-            darkModeToggle.textContent = theme === 'dark' ? '☀️ Light Mode' : '🌙 Dark Mode';
-        });
+        // Cek tema saat halaman dimuat
+        const currentTheme = localStorage.getItem('theme') || 'light';
+        setDarkMode(currentTheme === 'dark');
 
-        // Language Toggle (Basic implementation - would need full Laravel localization)
-        const langToggle = document.getElementById('lang-toggle');
-        let currentLang = localStorage.getItem('lang') || 'id';
-        langToggle.textContent = currentLang === 'id' ? 'EN' : 'ID';
+        // Tambah event listener HANYA JIKA tombolnya ada
+        if (darkModeToggle) {
+            darkModeToggle.addEventListener('click', () => {
+                setDarkMode(!html.classList.contains('dark'));
+            });
+        }
+        if (darkModeToggleMobile) {
+            darkModeToggleMobile.addEventListener('click', () => {
+                setDarkMode(!html.classList.contains('dark'));
+            });
+        }
 
-        langToggle.addEventListener('click', () => {
-            currentLang = currentLang === 'id' ? 'en' : 'id';
-            localStorage.setItem('lang', currentLang);
-            langToggle.textContent = currentLang === 'id' ? 'EN' : 'ID';
-            // In a real implementation, this would reload the page or update content dynamically
-            alert('Language switched to ' + (currentLang === 'id' ? 'Bahasa Indonesia' : 'English') + '. Reload page to apply.');
-        });
+        // --- Mobile Menu Toggle ---
+        const mobileMenuButton = document.getElementById('mobile-menu-button');
+        const mobileMenu = document.getElementById('mobile-menu');
+
+        // Tambah event listener HANYA JIKA kedua elemen ada
+        if (mobileMenuButton && mobileMenu) {
+            mobileMenuButton.addEventListener('click', () => {
+                mobileMenu.classList.toggle('hidden');
+            });
+        }
+
+        // (Script untuk lang-toggle sengaja saya nonaktifkan dulu
+        // agar fokus ke dark-mode dan hamburger.
+        // Kita bisa tambahkan itu lagi nanti jika diperlukan)
 
         // Initialize AOS
         AOS.init();

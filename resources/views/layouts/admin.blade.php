@@ -9,7 +9,7 @@
     <title>{{ config('app.name', 'Laravel') }} - Admin</title>
 
     <!-- Tailwind CSS -->
-    <script src="https://cdn.tailwindcss.com"></script>
+
 
     <!-- Fonts -->
     <link href="https://fonts.bunny.net/css?family=Nunito:400,600,700" rel="stylesheet" />
@@ -21,7 +21,7 @@
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
     <!-- Vite -->
-    @vite(['resources/sass/app.scss', 'resources/js/app.js'])
+    @vite(['resources/css/app.css', 'resources/js/app.js'])
 </head>
 
 <body class="bg-gray-100 dark:bg-gray-900 min-h-screen font-sans antialiased transition-colors duration-300">

@@ -43,7 +43,7 @@
                         class="border border-pink-300 dark:border-gray-600 p-2 rounded w-full focus:outline-pink-400 dark:bg-gray-700 dark:text-white"
                         oninput="autoSuggest(this.value)">
                     <div id="suggestions"
-                        class="absolute z-10 bg-white dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded mt-1 w-full max-h-40 overflow-y-auto hidden">
+                        class="absolute z-10 bg-white  border border-gray-300 dark:border- rounded mt-1 w-full max-h-40 overflow-y-auto hidden">
                     </div>
                 </div>
 
@@ -214,10 +214,10 @@
     </div>
 
     <!-- Reviews Modal -->
-    <div id="reviewsModal" class="fixed inset-0 bg-black bg-opacity-50 hidden z-50 flex items-center justify-center p-4">
+    <div id="reviewsModal" class="fixed inset-0  bg-transparent backdrop-brightness-50 hidden z-50 flex items-center justify-center p-4">
         <div class="bg-white dark:bg-gray-800 rounded-lg max-w-2xl w-full max-h-[80vh] overflow-y-auto">
             <div class="p-6">
-                <div class="flex justify-between items-center mb-4">
+                <div class="flex w justify-between items-center mb-4">
                     <h3 class="text-lg font-semibold text-gray-900 dark:text-white" id="modalTitle">Reviews</h3>
                     <button onclick="closeReviewsModal()"
                         class="text-gray-400 hover:text-gray-600 dark:hover:text-gray-300">
