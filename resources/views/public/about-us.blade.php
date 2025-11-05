@@ -28,7 +28,8 @@
 
         <!-- Bagian 1: Info Toko & Narasi -->
         <!-- Kita tambahkan x-data="{ open = false }" untuk mengontrol pop-up -->
-        <article x-data="{ open: false }" class="bg-white dark:bg-gray-800 shadow-xl rounded-lg overflow-hidden mb-10 relative">
+        <article x-data="{ open: false }"
+            class="bg-white dark:bg-gray-800 shadow-xl rounded-lg overflow-hidden mb-10 relative">
 
             <!-- Foto Gedung (Tidak berubah) -->
             @if($about->building_image)
@@ -107,17 +108,15 @@
                 Produk Toko kami: (Buku Terbaru)
             </h2>
 
-            <!-- Daftar Produk Grid (INI BAGIAN YANG DIGANTI) -->
+            <!-- Daftar Produk Grid -->
             <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 gap-4">
-
-                <!-- KODE ASLI (dinonaktifkan sementara)
                 @forelse($products as $product)
                     <div class="border border-gray-200 rounded-lg p-3 text-center shadow-sm">
                         <div class="font-bold text-lg text-blue-600 mb-2">
                             B{{ $loop->iteration + (($products->currentPage() - 1) * $products->perPage()) }}
                         </div>
-                        @if($product->gambar)
-                            <img src="{{ asset('storage/' . $product->gambar) }}" alt="{{ $product->nama }}"
+                        @if($product->foto)
+                            <img src="{{ asset('storage/' . $product->foto) }}" alt="{{ $product->nama }}"
                                 class="w-full h-32 object-cover mb-2 rounded">
                         @else
                             <div
@@ -134,79 +133,12 @@
                         Belum ada produk untuk ditampilkan.
                     </p>
                 @endforelse
-                -->
-
-                <!-- AWAL DUMMY DATA (Hardcoded) -->
-
-                <!-- Dummy Item 1 -->
-                <div class="border border-gray-200 rounded-lg p-3 text-center shadow-sm">
-                    <div class="font-bold text-lg text-blue-600 mb-2">B1</div>
-                    <div
-                        class="w-full h-32 bg-gray-200 mb-2 rounded flex items-center justify-center text-xs text-gray-500">
-                        Gambar Produk
-                    </div>
-                    <h3 class="text-sm font-medium text-gray-700 truncate">
-                        Buku 1
-                    </h3>
-                </div>
-
-                <!-- Dummy Item 2 -->
-                <div class="border border-gray-200 rounded-lg p-3 text-center shadow-sm">
-                    <div class="font-bold text-lg text-blue-600 mb-2">B2</div>
-                    <div
-                        class="w-full h-32 bg-gray-200 mb-2 rounded flex items-center justify-center text-xs text-gray-500">
-                        Gambar Produk
-                    </div>
-                    <h3 class="text-sm font-medium text-gray-700 truncate">
-                        Buku 2
-                    </h3>
-                </div>
-
-                <!-- Dummy Item 3 -->
-                <div class="border border-gray-200 rounded-lg p-3 text-center shadow-sm">
-                    <div class="font-bold text-lg text-blue-600 mb-2">B3</div>
-                    <div
-                        class="w-full h-32 bg-gray-200 mb-2 rounded flex items-center justify-center text-xs text-gray-500">
-                        Gambar Produk
-                    </div>
-                    <h3 class="text-sm font-medium text-gray-700 truncate">
-                        Buku 3
-                    </h3>
-                </div>
-
-                <!-- Dummy Item 4 -->
-                <div class="border border-gray-200 rounded-lg p-3 text-center shadow-sm">
-                    <div class="font-bold text-lg text-blue-600 mb-2">B4</div>
-                    <div
-                        class="w-full h-32 bg-gray-200 mb-2 rounded flex items-center justify-center text-xs text-gray-500">
-                        Gambar Produk
-                    </div>
-                    <h3 class="text-sm font-medium text-gray-700 truncate">
-                        Buku 4
-                    </h3>
-                </div>
-
-                <!-- Dummy Item 5 -->
-                <div class="border border-gray-200 rounded-lg p-3 text-center shadow-sm">
-                    <div class="font-bold text-lg text-blue-600 mb-2">B5</div>
-                    <div
-                        class="w-full h-32 bg-gray-200 mb-2 rounded flex items-center justify-center text-xs text-gray-500">
-                        Gambar Produk
-                    </div>
-                    <h3 class="text-sm font-medium text-gray-700 truncate">
-                        Buku 5
-                    </h3>
-                </div>
-                <!-- AKHIR DUMMY DATA -->
-
             </div>
 
-            <!-- Pagination (Dinonaktifkan karena data-nya hardcoded) -->
-            <!-- 
+            <!-- Pagination -->
             <div class="mt-8">
                 {{ $products->links() }}
             </div>
-            -->
 
         </section>
 

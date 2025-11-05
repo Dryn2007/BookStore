@@ -20,10 +20,10 @@ class AboutUsController extends Controller
 
         // 2. Ambil data Produk (sesuai sketsa: produk terbaru)
         // Kita paginasi 5 produk per halaman
-        $produks = Produk::latest()->paginate(5); // 'latest()' = buku baru launching
+        $products = Produk::latest()->paginate(5); // 'latest()' = buku baru launching
 
         // 3. Kirim *kedua* data ke view
-        return view('public.about-us', compact('about', 'produks'));
+        return view('public.about-us', compact('about', 'products'));
     }
 
     /**

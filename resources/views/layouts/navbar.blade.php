@@ -42,7 +42,7 @@
 
                             @auth
                                 @php
-                                    $role = Auth::user()->role ?? 'user';
+        $role = Auth::user()->role ?? 'user';
                                 @endphp
 
                                 @if ($role === 'admin')
@@ -97,7 +97,7 @@
                     <button id="closeLoginModal"
                         class="absolute top-2 right-3 text-gray-600 hover:text-red-500 text-2xl">&times;</button>
 
-                    <h2 class="text-2xl font-bold mb-4 text-center">Login</h2>
+                    <h2 class="text-2xl font-bold mb-4 text-center dark:text-white">Login</h2>
 
                     @if(session('status'))
                         <div class="bg-green-100 text-green-800 p-2 rounded mb-3">{{ session('status') }}</div>
@@ -121,15 +121,15 @@
                         @csrf
 
                         <div class="mb-4">
-                            <label for="email" class="block mb-1">Email</label>
+                            <label for="email" class="block mb-1 dark:text-white">Email</label>
                             <input type="email" id="email" name="email" value="{{ old('email') }}" required
-                                class="w-full border px-3 py-2 rounded">
+                                class="w-full border px-3 py-2 rounded dark:text-white">
                         </div>
 
                         <div class="mb-4">
-                            <label for="password" class="block mb-1">Kata Sandi</label>
+                            <label for="password" class="block mb-1 dark:text-white">Kata Sandi</label>
                             <input type="password" id="password" name="password" required
-                                class="w-full border px-3 py-2 rounded">
+                                class="w-full border px-3 py-2 rounded dark:text-white">
                         </div>
 
                         <button type="submit"
