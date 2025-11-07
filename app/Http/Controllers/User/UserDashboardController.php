@@ -8,6 +8,7 @@ use Illuminate\Support\Facades\Auth;
 use App\Models\Produk;
 use App\Models\Kategori;
 use App\Models\Message;
+use App\Models\Wishlist;
 use Illuminate\Support\Facades\App;
 
 class UserDashboardController extends Controller
@@ -86,6 +87,31 @@ class UserDashboardController extends Controller
         }
 
         return view('user.dashboard', compact('produk', 'kategori'));
+    }
+
+    public function show(Produk $produk)
+    {
+        $locale = session('locale', 'id');
+        App::setLocale($locale);
+
+        $produk->load(['kategori', 'reviews.user']);
+        $produk->loadCount('reviews');
+        $produk->loadAvg('reviews', 'rating');
+
+        if ($produk->reviews_avg_rating === null) {
+            $produk->reviews_avg_rating = 0;
+        }
+
+        $produk->reviews_avg_rating = round((float) $produk->reviews_avg_rating, 1);
+
+        $user = Auth::user();
+        $isInWishlist = $user
+            ? Wishlist::where('user_id', $user->id)
+            ->where('produk_id', $produk->id)
+            ->exists()
+            : false;
+
+        return view('user.product-detail', compact('produk', 'isInWishlist'));
     }
 
     public function autoSuggest(Request $request)

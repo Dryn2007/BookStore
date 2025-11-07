@@ -64,15 +64,21 @@
                 </div>
 
                 <div>
-                    <label for="rating_min" class="block text-sm font-medium text-pink-700 dark:text-pink-300 mb-1">{{ __('messages.rating_min') }}</label>
+                    <label for="rating_min"
+                        class="block text-sm font-medium text-pink-700 dark:text-pink-300 mb-1">{{ __('messages.rating_min') }}</label>
                     <select name="rating_min" id="rating_min"
                         class="border border-pink-300 dark:border-gray-600 p-2 rounded w-full focus:outline-pink-400 dark:bg-gray-700 dark:text-white">
                         <option value="">{{ __('messages.all_ratings') }}</option>
-                        <option value="1" {{ request('rating_min') == '1' ? 'selected' : '' }}>{{ __('messages.stars', ['count' => 1]) }}</option>
-                        <option value="2" {{ request('rating_min') == '2' ? 'selected' : '' }}>{{ __('messages.stars', ['count' => 2]) }}</option>
-                        <option value="3" {{ request('rating_min') == '3' ? 'selected' : '' }}>{{ __('messages.stars', ['count' => 3]) }}</option>
-                        <option value="4" {{ request('rating_min') == '4' ? 'selected' : '' }}>{{ __('messages.stars', ['count' => 4]) }}</option>
-                        <option value="5" {{ request('rating_min') == '5' ? 'selected' : '' }}>5 {{ __('messages.stars', ['count' => 5]) }}</option>
+                        <option value="1" {{ request('rating_min') == '1' ? 'selected' : '' }}>
+                            {{ __('messages.stars', ['count' => 1]) }}</option>
+                        <option value="2" {{ request('rating_min') == '2' ? 'selected' : '' }}>
+                            {{ __('messages.stars', ['count' => 2]) }}</option>
+                        <option value="3" {{ request('rating_min') == '3' ? 'selected' : '' }}>
+                            {{ __('messages.stars', ['count' => 3]) }}</option>
+                        <option value="4" {{ request('rating_min') == '4' ? 'selected' : '' }}>
+                            {{ __('messages.stars', ['count' => 4]) }}</option>
+                        <option value="5" {{ request('rating_min') == '5' ? 'selected' : '' }}>5
+                            {{ __('messages.stars', ['count' => 5]) }}</option>
                     </select>
                 </div>
 
@@ -81,12 +87,17 @@
                         class="block text-sm font-medium text-pink-700 dark:text-pink-300 mb-1">{{ __('messages.sort_by') }}</label>
                     <select name="sort" id="sort"
                         class="border border-pink-300 dark:border-gray-600 p-2 rounded w-full focus:outline-pink-400 dark:bg-gray-700 dark:text-white">
-                        <option value="latest" {{ request('sort') == 'latest' ? 'selected' : '' }}>{{ __('messages.latest') }}</option>
-                        <option value="price_asc" {{ request('sort') == 'price_asc' ? 'selected' : '' }}>{{ __('messages.cheapest') }}</option>
-                        <option value="price_desc" {{ request('sort') == 'price_desc' ? 'selected' : '' }}>{{ __('messages.most_expensive') }}</option>
-                        <option value="rating_desc" {{ request('sort') == 'rating_desc' ? 'selected' : '' }}>{{ __('messages.highest_rating') }}
+                        <option value="latest" {{ request('sort') == 'latest' ? 'selected' : '' }}>{{ __('messages.latest') }}
                         </option>
-                        <option value="terlaris" {{ request('sort') == 'terlaris' ? 'selected' : '' }}>{{ __('messages.best_seller') }}</option>
+                        <option value="price_asc" {{ request('sort') == 'price_asc' ? 'selected' : '' }}>
+                            {{ __('messages.cheapest') }}</option>
+                        <option value="price_desc" {{ request('sort') == 'price_desc' ? 'selected' : '' }}>
+                            {{ __('messages.most_expensive') }}</option>
+                        <option value="rating_desc" {{ request('sort') == 'rating_desc' ? 'selected' : '' }}>
+                            {{ __('messages.highest_rating') }}
+                        </option>
+                        <option value="terlaris" {{ request('sort') == 'terlaris' ? 'selected' : '' }}>
+                            {{ __('messages.best_seller') }}</option>
                     </select>
                 </div>
 
@@ -108,94 +119,32 @@
         </form>
 
         <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
-            <!-- Ubah bagian card produk -->
             @forelse ($produk as $item)
                 <div class="border border-pink-200 dark:border-gray-600 rounded p-4 shadow bg-white dark:bg-gray-800 flex flex-col justify-between transition-all duration-300 hover:shadow-lg"
                     data-aos="fade-up">
-                    <img src="{{ asset('storage/' . $item->foto) }}" alt="{{ $item->nama }}"
-                        class="w-full h-40 object-cover rounded mb-2">
-                    <h2 class="text-lg font-semibold text-pink-700 dark:text-pink-300">{{ $item->nama }}</h2>
+                    <a href="{{ route('user.product.detail', $item->id) }}" class="block">
+                        <img src="{{ asset('storage/' . $item->foto) }}" alt="{{ $item->nama }}"
+                            class="w-full h-40 object-cover rounded mb-2 hover:opacity-90 transition-opacity">
+                        <h2 class="text-lg font-semibold text-pink-700 dark:text-pink-300">{{ $item->nama }}</h2>
 
-                    <!-- Rating Display -->
-                    <div class="flex items-center mt-1">
-                        <div class="flex text-yellow-400">
-                            @for ($i = 1; $i <= 5; $i++)
-                                @if ($i <= $item->rating)
-                                    ★
-                                @else
-                                    ☆
-                                @endif
-                            @endfor
+                        <!-- Rating Display -->
+                        <div class="flex items-center mt-1">
+                            <div class="flex text-yellow-400">
+                                @for ($i = 1; $i <= 5; $i++)
+                                    @if ($i <= $item->rating)
+                                        ★
+                                    @else
+                                        ☆
+                                    @endif
+                                @endfor
+                            </div>
+                            <span class="text-sm text-gray-600 dark:text-gray-400 ml-2">({{ $item->rating }}/5 -
+                                {{ $item->total_reviews }} reviews)</span>
                         </div>
-                        <span class="text-sm text-gray-600 dark:text-gray-400 ml-2">({{ $item->total_reviews }} reviews)</span>
-                    </div>
 
-                    <!-- Recent Comments Preview -->
-                    @if($item->total_reviews > 0)
-                        <div class="mt-2 p-2 bg-gray-50 dark:bg-gray-700 rounded text-xs">
-                            @php
-                                $latestReview = $item->reviews->sortByDesc('created_at')->first();
-                            @endphp
-                            @if($latestReview)
-                                <div class="flex items-start space-x-2">
-                                    <div
-                                        class="w-4 h-4 bg-pink-500 rounded-full flex items-center justify-center text-white text-xs font-bold">
-                                        {{ substr($latestReview->user->name, 0, 1) }}
-                                    </div>
-                                    <div class="flex-1">
-                                        <div class="flex items-center space-x-1 mb-1">
-                                            <span
-                                                class="font-medium text-gray-800 dark:text-gray-200">{{ $latestReview->user->name }}</span>
-                                            <div class="flex text-yellow-400 text-xs">
-                                                @for ($i = 1; $i <= 5; $i++)
-                                                    @if ($i <= $latestReview->rating)
-                                                        ★
-                                                    @else
-                                                        ☆
-                                                    @endif
-                                                @endfor
-                                            </div>
-                                        </div>
-                                        <p class="text-gray-600 dark:text-gray-400 line-clamp-2">
-                                            {{ Str::limit($latestReview->review, 80) }}
-                                        </p>
-                                    </div>
-                                </div>
-                            @endif
-
-                            @if($item->total_reviews > 1)
-                                <button onclick="showReviewsModal({{ $item->id }}, '{{ addslashes($item->nama) }}')"
-                                    class="text-pink-600 dark:text-pink-400 hover:text-pink-800 dark:hover:text-pink-300 text-xs font-medium mt-2 inline-block">
-                                    Read more ({{ $item->total_reviews - 1 }} lainnya)
-                                </button>
-                            @endif
-                        </div>
-                    @endif
-
-                    <p class="mt-1 text-pink-800 dark:text-pink-200 font-bold">Rp {{ number_format($item->harga, 0, ',', '.') }}
-                    </p>
-
-                    <!-- Tambahkan informasi stok -->
-                    <div class="mt-2 flex items-center">
-                        <span
-                            class="text-sm {{ $item->stock > 0 ? 'text-green-600 dark:text-green-400' : 'text-red-600 dark:text-red-400' }}">
-                            @if($item->stock > 0)
-                                Stok: {{ $item->stock }}
-                            @else
-                                Stok Habis
-                            @endif
-                        </span>
-                    </div>
-
-                    <!-- Wishlist Button -->
-                    @php
-                        $isInWishlist = auth()->user()->wishlists()->where('produk_id', $item->id)->exists();
-                    @endphp
-                    <button onclick="toggleWishlist({{ $item->id }})"
-                        class="mt-2 text-red-500 hover:text-red-700 dark:text-red-400 dark:hover:text-red-300 text-xl"
-                        id="wishlist-btn-{{ $item->id }}">
-                        {{ $isInWishlist ? '❤️' : '🤍' }}
-                    </button>
+                        <p class="mt-2 text-pink-800 dark:text-pink-200 font-bold">Rp
+                            {{ number_format($item->harga, 0, ',', '.') }}</p>
+                    </a>
 
                     <form action="{{ route('user.cart.add', $item->id) }}" method="POST" class="mt-4">
                         @csrf
@@ -209,34 +158,14 @@
             @empty
                 <p class="col-span-full text-pink-600 dark:text-pink-400">Produk tidak ditemukan.</p>
             @endforelse
-
         </div>
         <div class="mt-8">
             {{ $produk->appends(request()->query())->links() }}
         </div>
     </div>
 
-    <!-- Reviews Modal -->
-    <div id="reviewsModal"
-        class="fixed inset-0  bg-transparent backdrop-brightness-50 hidden z-50 flex items-center justify-center p-4">
-        <div class="bg-white dark:bg-gray-800 rounded-lg max-w-2xl w-full max-h-[80vh] overflow-y-auto">
-            <div class="p-6">
-                <div class="flex w justify-between items-center mb-4">
-                    <h3 class="text-lg font-semibold text-gray-900 dark:text-white" id="modalTitle">Reviews</h3>
-                    <button onclick="closeReviewsModal()"
-                        class="text-gray-400 hover:text-gray-600 dark:hover:text-gray-300">
-                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12">
-                            </path>
-                        </svg>
-                    </button>
-                </div>
-                <div id="reviewsContent" class="space-y-4">
-                    <!-- Reviews will be loaded here -->
-                </div>
-            </div>
-        </div>
-    </div>
+    <!-- Reviews Modal - HAPUS ATAU COMMENT OUT -->
+    {{-- <div id="reviewsModal" ...>...</div> --}}
 @endsection
 
 @push('scripts')
@@ -299,67 +228,6 @@
             const search = document.getElementById('search');
             if (!search.contains(e.target) && !suggestions.contains(e.target)) {
                 suggestions.classList.add('hidden');
-            }
-        });
-
-        // Reviews Modal Functions
-        function showReviewsModal(produkId, produkName) {
-            document.getElementById('modalTitle').textContent = `Reviews untuk ${produkName}`;
-            document.getElementById('reviewsModal').classList.remove('hidden');
-
-            // Load reviews via AJAX
-            fetch(`/user/reviews/${produkId}`)
-                .then(response => response.json())
-                .then(data => {
-                    const content = document.getElementById('reviewsContent');
-                    content.innerHTML = '';
-
-                    if (data.reviews && data.reviews.length > 0) {
-                        data.reviews.forEach(review => {
-                            const reviewDiv = document.createElement('div');
-                            reviewDiv.className = 'border-b border-gray-200 dark:border-gray-600 pb-4 last:border-b-0';
-                            reviewDiv.innerHTML = `
-                                                            <div class="flex items-start space-x-3">
-                                                                <div class="w-8 h-8 bg-pink-500 rounded-full flex items-center justify-center text-white text-sm font-bold">
-                                                                    ${review.user.name.charAt(0).toUpperCase()}
-                                                                </div>
-                                                                <div class="flex-1">
-                                                                    <div class="flex items-center space-x-2 mb-2">
-                                                                        <span class="font-medium text-gray-900 dark:text-white">${review.user.name}</span>
-                                                                        <div class="flex text-yellow-400">
-                                                                            ${Array.from({ length: 5 }, (_, i) =>
-                                i < review.rating ? '★' : '☆'
-                            ).join('')}
-                                                                        </div>
-                                                                        <span class="text-xs text-gray-500 dark:text-gray-400">
-                                                                            ${new Date(review.created_at).toLocaleDateString('id-ID')}
-                                                                        </span>
-                                                                    </div>
-                                                                    <p class="text-gray-700 dark:text-gray-300">${review.review}</p>
-                                                                </div>
-                                                            </div>
-                                                        `;
-                            content.appendChild(reviewDiv);
-                        });
-                    } else {
-                        content.innerHTML = '<p class="text-gray-500 dark:text-gray-400 text-center">Belum ada review untuk produk ini.</p>';
-                    }
-                })
-                .catch(error => {
-                    console.error('Error loading reviews:', error);
-                    document.getElementById('reviewsContent').innerHTML =
-                        '<p class="text-red-500 text-center">Gagal memuat review. Silakan coba lagi.</p>';
-                });
-        }
-
-        function closeReviewsModal() {
-            document.getElementById('reviewsModal').classList.add('hidden');
-        }
-
-        // Close modal when clicking outside
-        document.getElementById('reviewsModal').addEventListener('click', function (e) {
-            if (e.target === this) {
-                closeReviewsModal();
             }
         });
     </script>

@@ -11,7 +11,6 @@ use App\Http\Controllers\Admin\KategoriController;
 use App\Http\Controllers\Admin\ProdukController;
 use App\Http\Controllers\Admin\UserController;
 use App\Http\Controllers\Admin\AdminTransactionController;
-use App\Http\Controllers\User\UserDashboardController;
 use App\Http\Controllers\User\CartController;
 use App\Http\Controllers\User\TransactionController;
 use App\Http\Controllers\User\PDFController;
@@ -19,6 +18,7 @@ use App\Http\Controllers\User\LanguageController;
 use App\Http\Controllers\ChatController;
 use App\Http\Controllers\PaymentController;
 use App\Http\Controllers\AboutPageController;
+use App\Http\Controllers\User\UserDashboardController;
 
 // BUNGKUS SEMUA RUTE DI DALAM GRUP 'web' AGAR SESSION BERJALAN
 Route::middleware('web')->group(function () {
@@ -83,7 +83,7 @@ Route::middleware('web')->group(function () {
     });
 
     // ---------------- USER ROUTES ----------------
-    Route::middleware('auth')->prefix('user')->name('user.')->group(function () {
+    Route::middleware(['auth', 'role:user'])->prefix('user')->name('user.')->group(function () {
         Route::get('/dashboard', [UserDashboardController::class, 'index'])->name('dashboard');
         Route::get('/dashboard/auto-suggest', [UserDashboardController::class, 'autoSuggest'])->name('dashboard.auto-suggest');
 
@@ -120,5 +120,8 @@ Route::middleware('web')->group(function () {
 
         // Language Switch
         Route::post('/language', [LanguageController::class, 'switchLanguage'])->name('language.switch');
+
+        // Detail Produk
+        Route::get('/product/{produk}', [UserDashboardController::class, 'show'])->name('product.detail');
     });
 }); // <-- TUTUP GRUP 'web' DI SINI
