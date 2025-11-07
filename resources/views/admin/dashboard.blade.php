@@ -11,7 +11,6 @@
                 @if(session('admin_unread_users_count'))
                     <span class="notification-badge">{{ session('admin_unread_users_count') }}</span>
                 @endif
-                <span class="online-indicator">● 3 online</span>
             </a>
         </div>
 
