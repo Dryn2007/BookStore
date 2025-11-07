@@ -7,6 +7,7 @@ use Illuminate\Http\Request;
 use App\Models\Review;
 use App\Models\Produk;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Storage;
 
 class ReviewController extends Controller
 {
@@ -15,6 +16,8 @@ class ReviewController extends Controller
         $request->validate([
             'rating' => 'required|integer|min:1|max:5',
             'review' => 'required|string|max:500',
+            'photos' => 'nullable|array|max:5',
+            'photos.*' => 'image|mimes:jpeg,png,jpg,gif|max:2048',
         ]);
 
         $produk = Produk::findOrFail($produkId);
@@ -40,12 +43,26 @@ class ReviewController extends Controller
             return back()->with('error', 'Anda sudah memberikan review untuk produk ini.');
         }
 
+        // Handle photo uploads
+        $photoPaths = [];
+        if ($request->hasFile('photos')) {
+            $reviewId = Review::max('id') + 1; // Get next review ID
+            $directory = "reviews/{$reviewId}";
+
+            foreach ($request->file('photos') as $photo) {
+                $filename = time() . '_' . uniqid() . '.' . $photo->getClientOriginalExtension();
+                $path = $photo->storeAs($directory, $filename, 'public');
+                $photoPaths[] = $path;
+            }
+        }
+
         // Create review
         Review::create([
             'user_id' => Auth::id(),
             'produk_id' => $produkId,
             'rating' => $request->rating,
             'review' => $request->review,
+            'photos' => json_encode($photoPaths),
         ]);
 
         // Update product rating and total reviews
@@ -59,15 +76,51 @@ class ReviewController extends Controller
         $request->validate([
             'rating' => 'required|integer|min:1|max:5',
             'review' => 'required|string|max:500',
+            'photos' => 'nullable|array|max:5',
+            'photos.*' => 'image|mimes:jpeg,png,jpg,gif|max:2048',
+            'existing_photos' => 'nullable|array',
+            'existing_photos.*' => 'string',
         ]);
 
         $review = Review::where('user_id', Auth::id())
             ->where('produk_id', $produkId)
             ->firstOrFail();
 
+        // Handle photo uploads
+        $photoPaths = json_decode($review->photos, true) ?? [];
+        $directory = "reviews/{$review->id}";
+
+        // Remove deleted photos
+        if ($request->has('existing_photos')) {
+            $existingPhotos = $request->existing_photos;
+            $photoPaths = array_intersect($photoPaths, $existingPhotos);
+
+            // Delete removed photos from storage
+            $removedPhotos = array_diff(json_decode($review->photos, true) ?? [], $existingPhotos);
+            foreach ($removedPhotos as $removedPhoto) {
+                Storage::disk('public')->delete($removedPhoto);
+            }
+        } else {
+            // If no existing_photos sent, remove all photos
+            foreach ($photoPaths as $photo) {
+                Storage::disk('public')->delete($photo);
+            }
+            $photoPaths = [];
+        }
+
+        // Add new photos
+        if ($request->hasFile('photos')) {
+            foreach ($request->file('photos') as $photo) {
+                $filename = time() . '_' . uniqid() . '.' . $photo->getClientOriginalExtension();
+                $path = $photo->storeAs($directory, $filename, 'public');
+                $photoPaths[] = $path;
+            }
+        }
+
         $review->update([
             'rating' => $request->rating,
             'review' => $request->review,
+            'photos' => json_encode($photoPaths),
         ]);
 
         // Update product rating and total reviews

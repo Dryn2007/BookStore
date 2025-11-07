@@ -124,16 +124,39 @@
                                             {{ $review->created_at->diffForHumans() }}
                                         </span>
                                     </div>
-                                    <p class="text-gray-700 dark:text-gray-300 leading-relaxed">
+                                    <p class="text-gray-700 dark:text-gray-300 leading-relaxed mb-3">
                                         {{ $review->review }}
                                     </p>
+
+                                    <!-- Photo Display -->
+                                    @if($review->photos)
+                                        @php $photos = json_decode($review->photos, true) ?? [] @endphp
+                                        @if(count($photos) > 0)
+                                            <div class="flex space-x-2">
+                                                @for($i = 0; $i < min(2, count($photos)); $i++)
+                                                    <img src="{{ asset('storage/' . $photos[$i]) }}" alt="Review photo"
+                                                        class="w-12 h-12 object-cover rounded cursor-pointer review-photo"
+                                                        data-photos="{{ json_encode($photos) }}" data-rating="{{ $review->rating }}"
+                                                        data-review="{{ $review->review }}" data-user="{{ $review->user->name }}">
+                                                @endfor
+                                                @if(count($photos) > 2)
+                                                    <div class="w-12 h-12 bg-gray-300 dark:bg-gray-600 rounded flex items-center justify-center cursor-pointer review-photo blur-sm"
+                                                        data-photos="{{ json_encode($photos) }}" data-rating="{{ $review->rating }}"
+                                                        data-review="{{ $review->review }}" data-user="{{ $review->user->name }}">
+                                                        <span
+                                                            class="text-gray-700 dark:text-gray-300 font-semibold text-xs">+{{ count($photos) - 2 }}</span>
+                                                    </div>
+                                                @endif
+                                            </div>
+                                        @endif
+                                    @endif
                                 </div>
                             </div>
                         </div>
                     @endforeach
                 </div>
             @else
-                <div class="text-center py-12 bg-gray-50 dark:bg-gray-800 rounded-lg">
+                <div class="text-center py-12 bg-gray-50 dark:bg-gray-800 rounded-lg ">
                     <p class="text-gray-500 dark:text-gray-400 text-lg">
                         Belum ada review untuk produk ini. Jadilah yang pertama memberikan review!
                     </p>
@@ -160,5 +183,127 @@
                 })
                 .catch(error => console.error('Error:', error));
         }
+
+        // Modal for photo gallery
+        const modal = document.createElement('div');
+        modal.className = 'fixed inset-0 bg-transparent backdrop-brightness-50 hidden z-50 flex items-center justify-center p-4';
+        modal.innerHTML = `
+                    <div class="bg-white dark:bg-gray-800 rounded-lg max-w-5xl w-full max-h-[90vh] overflow-hidden relative">
+                        <div class="p-4 border-b border-gray-200 dark:border-gray-600 flex justify-between items-center">
+                            <h3 class="text-lg font-semibold text-pink-700 dark:text-pink-300" id="modal-title"></h3>
+                            <button class="text-gray-500 hover:text-gray-700 text-2xl" id="close-modal">&times;</button>
+                        </div>
+                        <div class="p-6">
+                            <div class="flex flex-col lg:flex-row gap-6">
+                                <div class="lg:w-1/3">
+                                    <div class="flex text-yellow-400 text-2xl mb-3" id="modal-rating"></div>
+                                    <p class="text-gray-700 dark:text-gray-300 leading-relaxed" id="modal-review"></p>
+                                </div>
+                                <div class="lg:w-2/3 relative">
+                                    <div class="relative overflow-hidden rounded-lg bg-black">
+                                        <div id="photo-slider" class="flex transition-transform duration-300 ease-in-out">
+                                            <!-- Photos will be inserted here -->
+                                        </div>
+                                        <button id="prev-btn" class="absolute left-2 top-1/2 transform -translate-y-1/2 bg-black bg-opacity-50 text-white p-2 rounded-full hover:bg-opacity-75 transition-all">
+                                            ‹
+                                        </button>
+                                        <button id="next-btn" class="absolute right-2 top-1/2 transform -translate-y-1/2 bg-black bg-opacity-50 text-white p-2 rounded-full hover:bg-opacity-75 transition-all">
+                                            ›
+                                        </button>
+                                    </div>
+                                    <div class="flex justify-center mt-4 space-x-2" id="photo-indicators">
+                                        <!-- Indicators will be inserted here -->
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                `;
+        document.body.appendChild(modal);
+
+        // Show modal on photo click
+        let currentPhotoIndex = 0;
+        let currentPhotos = [];
+
+        document.addEventListener('click', function (e) {
+            if (e.target.classList.contains('review-photo') || e.target.closest('.review-photo')) {
+                const target = e.target.classList.contains('review-photo') ? e.target : e.target.closest('.review-photo');
+                currentPhotos = JSON.parse(target.dataset.photos);
+                const rating = parseInt(target.dataset.rating);
+                const review = target.dataset.review;
+                const user = target.dataset.user;
+                currentPhotoIndex = 0;
+
+                document.getElementById('modal-title').textContent = `Review oleh ${user}`;
+                document.getElementById('modal-review').textContent = review;
+
+                const ratingDiv = document.getElementById('modal-rating');
+                ratingDiv.innerHTML = '';
+                for (let i = 1; i <= 5; i++) {
+                    ratingDiv.innerHTML += i <= rating ? '★' : '☆';
+                }
+
+                updatePhotoSlider();
+                updateIndicators();
+
+                modal.classList.remove('hidden');
+            }
+        });
+
+        function updatePhotoSlider() {
+            const slider = document.getElementById('photo-slider');
+            slider.innerHTML = '';
+            currentPhotos.forEach((photo, index) => {
+                const img = document.createElement('img');
+                img.src = `${window.location.origin}/storage/${photo}`;
+                img.alt = `Review photo ${index + 1}`;
+                img.className = 'w-full h-96 object-contain flex-shrink-0';
+                slider.appendChild(img);
+            });
+            slider.style.transform = `translateX(-${currentPhotoIndex * 100}%)`;
+        }
+
+        function updateIndicators() {
+            const indicators = document.getElementById('photo-indicators');
+            indicators.innerHTML = '';
+            currentPhotos.forEach((_, index) => {
+                const indicator = document.createElement('button');
+                indicator.className = `w-3 h-3 rounded-full transition-all ${index === currentPhotoIndex ? 'bg-pink-500' : 'bg-gray-400'}`;
+                indicator.addEventListener('click', () => {
+                    currentPhotoIndex = index;
+                    updatePhotoSlider();
+                    updateIndicators();
+                });
+                indicators.appendChild(indicator);
+            });
+        }
+
+        // Navigation buttons
+        document.addEventListener('click', function (e) {
+            if (e.target.id === 'prev-btn') {
+                if (currentPhotoIndex > 0) {
+                    currentPhotoIndex--;
+                    updatePhotoSlider();
+                    updateIndicators();
+                }
+            } else if (e.target.id === 'next-btn') {
+                if (currentPhotoIndex < currentPhotos.length - 1) {
+                    currentPhotoIndex++;
+                    updatePhotoSlider();
+                    updateIndicators();
+                }
+            }
+        });
+
+        // Close modal
+        document.getElementById('close-modal').addEventListener('click', () => {
+            modal.classList.add('hidden');
+        });
+
+        modal.addEventListener('click', (e) => {
+            if (e.target === modal) {
+                modal.classList.add('hidden');
+            }
+        });
     </script>
 @endpush

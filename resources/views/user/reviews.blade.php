@@ -66,7 +66,7 @@
             @endif
 
             <form action="{{ $userReview ? route('user.reviews.update', $produk->id) : route('user.reviews.store', $produk->id) }}"
-                method="POST">
+                method="POST" enctype="multipart/form-data">
                 @csrf
                 @if($userReview)
                     @method('PUT')
@@ -91,6 +91,27 @@
                     <textarea name="review" id="review" rows="4"
                         class="w-full border border-pink-300 dark:border-gray-600 rounded p-3 focus:outline-pink-400 dark:bg-gray-600 dark:text-white"
                         placeholder="Bagikan pengalaman Anda dengan produk ini..." required>{{ $userReview ? $userReview->review : '' }}</textarea>
+                </div>
+
+                <div class="mb-4">
+                    <label for="photos" class="block text-sm font-medium text-pink-700 dark:text-pink-300 mb-2">Foto (Maksimal 5 foto)</label>
+                    <input type="file" name="photos[]" id="photos" multiple accept="image/*"
+                        class="w-full border border-pink-300 dark:border-gray-600 rounded p-3 focus:outline-pink-400 dark:bg-gray-600 dark:text-white">
+                    <p class="text-sm text-gray-500 dark:text-gray-400 mt-1">Format: JPG, PNG, GIF. Maksimal 2MB per foto.</p>
+                </div>
+
+                <!-- Photo Preview -->
+                <div id="photo-preview" class="mb-4 grid grid-cols-2 md:grid-cols-3 gap-2">
+                    @if($userReview && $userReview->photos)
+                        @php $existingPhotos = json_decode($userReview->photos, true) ?? [] @endphp
+                        @foreach($existingPhotos as $index => $photo)
+                            <div class="relative photo-item" data-path="{{ $photo }}">
+                                <img src="{{ asset('storage/' . $photo) }}" alt="Preview" class="w-full h-20 object-cover rounded">
+                                <button type="button" class="absolute top-1 right-1 bg-red-500 text-white rounded-full w-5 h-5 text-xs remove-photo">×</button>
+                                <input type="hidden" name="existing_photos[]" value="{{ $photo }}">
+                            </div>
+                        @endforeach
+                    @endif
                 </div>
 
                 <button type="submit" class="bg-pink-500 text-white px-6 py-2 rounded hover:bg-pink-600 transition-colors duration-200">
@@ -124,7 +145,33 @@
                                     </div>
                                 </div>
                                 <p class="text-gray-600 dark:text-gray-400 text-sm mb-2">{{ $review->created_at->format('d M Y') }}</p>
-                                <p class="text-gray-800 dark:text-gray-200">{{ $review->review }}</p>
+                                <p class="text-gray-800 dark:text-gray-200 mb-3">{{ $review->review }}</p>
+
+                                <!-- Photo Display -->
+                                @if($review->photos)
+                                    @php $photos = json_decode($review->photos, true) ?? [] @endphp
+                                    @if(count($photos) > 0)
+                                        <div class="flex space-x-2 mb-2">
+                                            @for($i = 0; $i < min(2, count($photos)); $i++)
+                                                <img src="{{ asset('storage/' . $photos[$i]) }}" alt="Review photo"
+                                                    class="w-16 h-16 object-cover rounded cursor-pointer review-photo"
+                                                    data-photos="{{ json_encode($photos) }}"
+                                                    data-rating="{{ $review->rating }}"
+                                                    data-review="{{ $review->review }}"
+                                                    data-user="{{ $review->user->name }}">
+                                            @endfor
+                                            @if(count($photos) > 2)
+                                                <div class="w-16 h-16 bg-gray-300 dark:bg-gray-600 rounded flex items-center justify-center cursor-pointer review-photo blur-sm"
+                                                    data-photos="{{ json_encode($photos) }}"
+                                                    data-rating="{{ $review->rating }}"
+                                                    data-review="{{ $review->review }}"
+                                                    data-user="{{ $review->user->name }}">
+                                                    <span class="text-gray-700 dark:text-gray-300 font-semibold">+{{ count($photos) - 2 }}</span>
+                                                </div>
+                                            @endif
+                                        </div>
+                                    @endif
+                                @endif
                             </div>
                         </div>
                     </div>
@@ -171,5 +218,163 @@
                 }
             });
         }
+
+        // Photo preview and upload
+        document.getElementById('photos').addEventListener('change', function(e) {
+            const files = Array.from(e.target.files);
+            const preview = document.getElementById('photo-preview');
+            const existingCount = preview.querySelectorAll('.photo-item').length;
+
+            if (existingCount + files.length > 5) {
+                alert('Maksimal 5 foto diperbolehkan');
+                e.target.value = '';
+                return;
+            }
+
+            files.forEach(file => {
+                if (file.type.startsWith('image/')) {
+                    const reader = new FileReader();
+                    reader.onload = function(e) {
+                        const div = document.createElement('div');
+                        div.className = 'relative photo-item';
+                        div.innerHTML = `
+                            <img src="${e.target.result}" alt="Preview" class="w-full h-20 object-cover rounded">
+                            <button type="button" class="absolute top-1 right-1 bg-red-500 text-white rounded-full w-5 h-5 text-xs remove-photo">×</button>
+                        `;
+                        preview.appendChild(div);
+                    };
+                    reader.readAsDataURL(file);
+                }
+            });
+        });
+
+        // Remove photo from preview
+        document.addEventListener('click', function(e) {
+            if (e.target.classList.contains('remove-photo')) {
+                e.target.closest('.photo-item').remove();
+            }
+        });
+
+        // Modal for photo gallery
+        const modal = document.createElement('div');
+        modal.className = 'fixed inset-0 bg-black bg-opacity-75 hidden z-50 flex items-center justify-center p-4';
+        modal.innerHTML = `
+            <div class="bg-white dark:bg-gray-800 rounded-lg max-w-5xl w-full max-h-[90vh] overflow-hidden relative">
+                <div class="p-4 border-b border-gray-200 dark:border-gray-600 flex justify-between items-center">
+                    <h3 class="text-lg font-semibold text-pink-700 dark:text-pink-300" id="modal-title"></h3>
+                    <button class="text-gray-500 hover:text-gray-700 text-2xl" id="close-modal">&times;</button>
+                </div>
+                <div class="p-6">
+                    <div class="flex flex-col lg:flex-row gap-6">
+                        <div class="lg:w-1/3">
+                            <div class="flex text-yellow-400 text-2xl mb-3" id="modal-rating"></div>
+                            <p class="text-gray-700 dark:text-gray-300 leading-relaxed" id="modal-review"></p>
+                        </div>
+                        <div class="lg:w-2/3 relative">
+                            <div class="relative overflow-hidden rounded-lg bg-black">
+                                <div id="photo-slider" class="flex transition-transform duration-300 ease-in-out">
+                                    <!-- Photos will be inserted here -->
+                                </div>
+                                <button id="prev-btn" class="absolute left-2 top-1/2 transform -translate-y-1/2 bg-black bg-opacity-50 text-white p-2 rounded-full hover:bg-opacity-75 transition-all">
+                                    ‹
+                                </button>
+                                <button id="next-btn" class="absolute right-2 top-1/2 transform -translate-y-1/2 bg-black bg-opacity-50 text-white p-2 rounded-full hover:bg-opacity-75 transition-all">
+                                    ›
+                                </button>
+                            </div>
+                            <div class="flex justify-center mt-4 space-x-2" id="photo-indicators">
+                                <!-- Indicators will be inserted here -->
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        `;
+        document.body.appendChild(modal);
+
+        // Show modal on photo click
+        let currentPhotoIndex = 0;
+        let currentPhotos = [];
+
+        document.addEventListener('click', function(e) {
+            if (e.target.classList.contains('review-photo') || e.target.closest('.review-photo')) {
+                const target = e.target.classList.contains('review-photo') ? e.target : e.target.closest('.review-photo');
+                currentPhotos = JSON.parse(target.dataset.photos);
+                const rating = parseInt(target.dataset.rating);
+                const review = target.dataset.review;
+                const user = target.dataset.user;
+                currentPhotoIndex = 0;
+
+                document.getElementById('modal-title').textContent = `Review oleh ${user}`;
+                document.getElementById('modal-review').textContent = review;
+
+                const ratingDiv = document.getElementById('modal-rating');
+                ratingDiv.innerHTML = '';
+                for (let i = 1; i <= 5; i++) {
+                    ratingDiv.innerHTML += i <= rating ? '★' : '☆';
+                }
+
+                updatePhotoSlider();
+                updateIndicators();
+
+                modal.classList.remove('hidden');
+            }
+        });
+
+        function updatePhotoSlider() {
+            const slider = document.getElementById('photo-slider');
+            slider.innerHTML = '';
+            currentPhotos.forEach((photo, index) => {
+                const img = document.createElement('img');
+                img.src = `${window.location.origin}/storage/${photo}`;
+                img.alt = `Review photo ${index + 1}`;
+                img.className = 'w-full h-96 object-contain flex-shrink-0';
+                slider.appendChild(img);
+            });
+            slider.style.transform = `translateX(-${currentPhotoIndex * 100}%)`;
+        }
+
+        function updateIndicators() {
+            const indicators = document.getElementById('photo-indicators');
+            indicators.innerHTML = '';
+            currentPhotos.forEach((_, index) => {
+                const indicator = document.createElement('button');
+                indicator.className = `w-3 h-3 rounded-full transition-all ${index === currentPhotoIndex ? 'bg-pink-500' : 'bg-gray-400'}`;
+                indicator.addEventListener('click', () => {
+                    currentPhotoIndex = index;
+                    updatePhotoSlider();
+                    updateIndicators();
+                });
+                indicators.appendChild(indicator);
+            });
+        }
+
+        // Navigation buttons
+        document.addEventListener('click', function(e) {
+            if (e.target.id === 'prev-btn') {
+                if (currentPhotoIndex > 0) {
+                    currentPhotoIndex--;
+                    updatePhotoSlider();
+                    updateIndicators();
+                }
+            } else if (e.target.id === 'next-btn') {
+                if (currentPhotoIndex < currentPhotos.length - 1) {
+                    currentPhotoIndex++;
+                    updatePhotoSlider();
+                    updateIndicators();
+                }
+            }
+        });
+
+        // Close modal
+        document.getElementById('close-modal').addEventListener('click', () => {
+            modal.classList.add('hidden');
+        });
+
+        modal.addEventListener('click', (e) => {
+            if (e.target === modal) {
+                modal.classList.add('hidden');
+            }
+        });
     </script>
 @endpush
