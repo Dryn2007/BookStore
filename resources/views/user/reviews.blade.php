@@ -161,12 +161,13 @@
                                                     data-user="{{ $review->user->name }}">
                                             @endfor
                                             @if(count($photos) > 2)
-                                                <div class="w-16 h-16 bg-gray-300 dark:bg-gray-600 rounded flex items-center justify-center cursor-pointer review-photo blur-sm"
+                                                <div class="w-16 h-16 bg-gray-300 dark:bg-gray-600 rounded flex items-center justify-center cursor-pointer review-photo relative"
                                                     data-photos="{{ json_encode($photos) }}"
                                                     data-rating="{{ $review->rating }}"
                                                     data-review="{{ $review->review }}"
                                                     data-user="{{ $review->user->name }}">
-                                                    <span class="text-gray-700 dark:text-gray-300 font-semibold">+{{ count($photos) - 2 }}</span>
+                                                    <div class="absolute inset-0 bg-gray-300 dark:bg-gray-600 rounded blur-sm"></div>
+                                                    <span class="relative text-gray-700 dark:text-gray-300 font-semibold z-10">+{{ count($photos) - 2 }} lagi</span>
                                                 </div>
                                             @endif
                                         </div>

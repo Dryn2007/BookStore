@@ -147,7 +147,7 @@
                     <button id="closeRegisterModal"
                         class="absolute top-2 right-3 text-gray-600 hover:text-red-500 text-2xl">&times;</button>
 
-                    <h2 class="text-2xl font-bold mb-4 text-center">Registrasi</h2>
+                    <h2 class="text-2xl font-bold mb-4 text-center dark:text-white">Registrasi</h2>
 
                     @if(session('success'))
                         <div class="bg-green-100 text-green-800 p-2 rounded mb-3">{{ session('success') }}</div>
@@ -167,27 +167,27 @@
                         @csrf
 
                         <div class="mb-4">
-                            <label for="name" class="block mb-1">Nama Lengkap</label>
+                            <label for="name" class="block mb-1 dark:text-white">Nama Lengkap</label>
                             <input type="text" id="name" name="name" value="{{ old('name') }}" required
-                                class="w-full border px-3 py-2 rounded">
+                                class="w-full border px-3 py-2 rounded dark:text-white">
                         </div>
 
                         <div class="mb-4">
-                            <label for="email" class="block mb-1">Alamat Email</label>
+                            <label for="email" class="block mb-1 dark:text-white">Alamat Email</label>
                             <input type="email" id="email" name="email" value="{{ old('email') }}" required
-                                class="w-full border px-3 py-2 rounded">
+                                class="w-full border px-3 py-2 rounded dark:text-white">
                         </div>
 
                         <div class="mb-4">
-                            <label for="password" class="block mb-1">Kata Sandi</label>
+                            <label for="password" class="block mb-1 dark:text-white">Kata Sandi</label>
                             <input type="password" id="password" name="password" required
-                                class="w-full border px-3 py-2 rounded">
+                                class="w-full border px-3 py-2 rounded dark:text-white">
                         </div>
 
                         <div class="mb-4">
-                            <label for="password_confirmation" class="block mb-1">Konfirmasi Kata Sandi</label>
+                            <label for="password_confirmation" class="block mb-1 dark:text-white">Konfirmasi Kata Sandi</label>
                             <input type="password" id="password_confirmation" name="password_confirmation" required
-                                class="w-full border px-3 py-2 rounded">
+                                class="w-full border px-3 py-2 rounded dark:text-white">
                         </div>
 
                         <button type="submit"

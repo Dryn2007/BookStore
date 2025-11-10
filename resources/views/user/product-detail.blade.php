@@ -140,11 +140,13 @@
                                                         data-review="{{ $review->review }}" data-user="{{ $review->user->name }}">
                                                 @endfor
                                                 @if(count($photos) > 2)
-                                                    <div class="w-12 h-12 bg-gray-300 dark:bg-gray-600 rounded flex items-center justify-center cursor-pointer review-photo blur-sm"
+                                                    <div class="w-12 h-12 bg-gray-300 dark:bg-gray-600 rounded flex items-center justify-center cursor-pointer review-photo relative"
                                                         data-photos="{{ json_encode($photos) }}" data-rating="{{ $review->rating }}"
                                                         data-review="{{ $review->review }}" data-user="{{ $review->user->name }}">
+                                                        <div class="absolute inset-0 bg-gray-300 dark:bg-gray-600 rounded blur-sm"></div>
                                                         <span
-                                                            class="text-gray-700 dark:text-gray-300 font-semibold text-xs">+{{ count($photos) - 2 }}</span>
+                                                            class="relative text-gray-700 dark:text-gray-300 font-semibold text-xs z-10">+{{ count($photos) - 2 }}
+                                                            lagi</span>
                                                     </div>
                                                 @endif
                                             </div>
@@ -188,37 +190,37 @@
         const modal = document.createElement('div');
         modal.className = 'fixed inset-0 bg-transparent backdrop-brightness-50 hidden z-50 flex items-center justify-center p-4';
         modal.innerHTML = `
-                    <div class="bg-white dark:bg-gray-800 rounded-lg max-w-5xl w-full max-h-[90vh] overflow-hidden relative">
-                        <div class="p-4 border-b border-gray-200 dark:border-gray-600 flex justify-between items-center">
-                            <h3 class="text-lg font-semibold text-pink-700 dark:text-pink-300" id="modal-title"></h3>
-                            <button class="text-gray-500 hover:text-gray-700 text-2xl" id="close-modal">&times;</button>
-                        </div>
-                        <div class="p-6">
-                            <div class="flex flex-col lg:flex-row gap-6">
-                                <div class="lg:w-1/3">
-                                    <div class="flex text-yellow-400 text-2xl mb-3" id="modal-rating"></div>
-                                    <p class="text-gray-700 dark:text-gray-300 leading-relaxed" id="modal-review"></p>
-                                </div>
-                                <div class="lg:w-2/3 relative">
-                                    <div class="relative overflow-hidden rounded-lg bg-black">
-                                        <div id="photo-slider" class="flex transition-transform duration-300 ease-in-out">
-                                            <!-- Photos will be inserted here -->
-                                        </div>
-                                        <button id="prev-btn" class="absolute left-2 top-1/2 transform -translate-y-1/2 bg-black bg-opacity-50 text-white p-2 rounded-full hover:bg-opacity-75 transition-all">
-                                            ‹
-                                        </button>
-                                        <button id="next-btn" class="absolute right-2 top-1/2 transform -translate-y-1/2 bg-black bg-opacity-50 text-white p-2 rounded-full hover:bg-opacity-75 transition-all">
-                                            ›
-                                        </button>
+                        <div class="bg-white dark:bg-gray-800 rounded-lg max-w-5xl w-full max-h-[90vh] overflow-hidden relative">
+                            <div class="p-4 border-b border-gray-200 dark:border-gray-600 flex justify-between items-center">
+                                <h3 class="text-lg font-semibold text-pink-700 dark:text-pink-300" id="modal-title"></h3>
+                                <button class="text-gray-500 hover:text-gray-700 text-2xl" id="close-modal">&times;</button>
+                            </div>
+                            <div class="p-6">
+                                <div class="flex flex-col lg:flex-row gap-6">
+                                    <div class="lg:w-1/3">
+                                        <div class="flex text-yellow-400 text-2xl mb-3" id="modal-rating"></div>
+                                        <p class="text-gray-700 dark:text-gray-300 leading-relaxed" id="modal-review"></p>
                                     </div>
-                                    <div class="flex justify-center mt-4 space-x-2" id="photo-indicators">
-                                        <!-- Indicators will be inserted here -->
+                                    <div class="lg:w-2/3 relative">
+                                        <div class="relative overflow-hidden rounded-lg bg-black">
+                                            <div id="photo-slider" class="flex transition-transform duration-300 ease-in-out">
+                                                <!-- Photos will be inserted here -->
+                                            </div>
+                                            <button id="prev-btn" class="absolute left-2 top-1/2 transform -translate-y-1/2 bg-black bg-opacity-50 text-white p-2 rounded-full hover:bg-opacity-75 transition-all">
+                                                ‹
+                                            </button>
+                                            <button id="next-btn" class="absolute right-2 top-1/2 transform -translate-y-1/2 bg-black bg-opacity-50 text-white p-2 rounded-full hover:bg-opacity-75 transition-all">
+                                                ›
+                                            </button>
+                                        </div>
+                                        <div class="flex justify-center mt-4 space-x-2" id="photo-indicators">
+                                            <!-- Indicators will be inserted here -->
+                                        </div>
                                     </div>
                                 </div>
                             </div>
                         </div>
-                    </div>
-                `;
+                    `;
         document.body.appendChild(modal);
 
         // Show modal on photo click
